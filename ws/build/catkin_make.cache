@@ -1,2 +1,0 @@
-
--DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_DEVEL_PREFIX=/home/casper/Documents/studentermedhjælper/shadowbot/ws/devel -DCMAKE_INSTALL_PREFIX=/home/casper/Documents/studentermedhjælper/shadowbot/ws/install -G Unix Makefiles
