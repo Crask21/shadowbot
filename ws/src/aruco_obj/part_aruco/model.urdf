@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot name="part_aruco">
+    <link name="part_link">
+        <inertial>
+            <mass value="1.0"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+        </inertial>
+        <visual>
+            <geometry>
+                <mesh filename="package://aruco_obj/part_aruco/meshes/part.stl"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://aruco_obj/part_aruco/meshes/part.stl" />
+            </geometry>
+        </collision>
+    <link name="aruco_marker">
+        <visual>
+            <geometry>
+                <box size="0.015 0.015 0.001"/>
+            </geometry>
+            <material>
+                <color rgba="1 1 1 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.015 0.015 0.001"/>
+            </geometry>
+        </collision>
+        <origin xyz="0 0 0.001" rpy="0 0 0"/>
+    </link>
+    <joint name="aruco_joint" type="fixed">
+        <parent link="part_link"/>
+        <child link="aruco_marker"/>
+        <origin xyz="0 0 0.001" rpy="0 0 0"/>
+    </joint>
+    
+    <gazebo reference="part_link">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+</robot>

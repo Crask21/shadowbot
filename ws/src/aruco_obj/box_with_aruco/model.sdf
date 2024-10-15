@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<sdf version='1.7'>
+  <model name='box_with_aruco'>
+  
+    <link name='box_link'>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.01</izz>
+        </inertia>
+      </inertial>
+      <collision name='box_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='box_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Red</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+
+      <!-- ArUco Marker 1 -->
+      <visual name='aruco_marker_1_visual'>
+        <pose>-0.025 0 0 -1.57079 0 -1.5708</pose>
+        <geometry>
+          <box>
+            <size>0.015 0.015 0.0001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://box_with_aruco/materials/scripts</uri>
+            <uri>model://box_with_aruco/materials/textures</uri>
+            <name>Marker1</name>
+          </script>
+        </material>
+      </visual>
+
+      <!-- ArUco Marker 2 -->
+      <visual name='aruco_marker_2_visual'>
+        <pose>0 0 0.025 0 -0 1.57079</pose>
+        <geometry>
+          <box>
+            <size>0.015 0.015 0.0001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://box_with_aruco/materials/scripts</uri>
+            <uri>model://box_with_aruco/materials/textures</uri>
+            <name>Marker2</name>
+          </script>
+        </material>
+      </visual>
+
+      
+    </link>
+    
+  </model>
+</sdf>

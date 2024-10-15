@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<sdf version='1.7'>
+  <model name='part_aruco'>
+  
+    <link name='part_link'>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.01</izz>
+        </inertia>
+      </inertial>
+      <collision name='part_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://part_aruco/meshes/part.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='box_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://part_aruco/meshes/part.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Red</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+
+      <!-- ArUco Marker 1 -->
+      <visual name='aruco_marker_1_visual'>
+        <pose>0.0098 0.0098 0.02 0 0 0.785</pose>
+        <geometry>
+          <box>
+            <size>0.010 0.010 0.0001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://box_with_aruco/materials/scripts</uri>
+            <uri>model://box_with_aruco/materials/textures</uri>
+            <name>Marker1</name>
+          </script>
+        </material>
+      </visual>
+
+      <!-- ArUco Marker 2 -->
+      <visual name='aruco_marker_2_visual'>
+        <pose>-0.0098 -0.0098 0.02 0 0 0.785</pose>
+        <geometry>
+          <box>
+            <size>0.010 0.010 0.0001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://box_with_aruco/materials/scripts</uri>
+            <uri>model://box_with_aruco/materials/textures</uri>
+            <name>Marker2</name>
+          </script>
+        </material>
+      </visual>
+
+      
+    </link>
+    
+  </model>
+</sdf>
