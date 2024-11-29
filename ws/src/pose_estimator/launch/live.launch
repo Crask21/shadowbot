@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch"/>
+
+  <node name="live_estimator" pkg="pose_estimator" type="live_estimator.py" output="screen" />
+</launch>

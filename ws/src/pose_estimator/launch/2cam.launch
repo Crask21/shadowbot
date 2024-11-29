@@ -1,0 +1,15 @@
+<launch>
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="camera" value="cam1"/>
+    <arg name="serial_no" value="831612070975"/>
+  </include>
+
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="camera" value="cam2"/>
+    <arg name="serial_no" value="831612072516"/>
+    <!-- <arg name="manager" value="realsense2_camera2_manager"/> -->
+  </include>
+  <!-- <node name="live_estimator" pkg="pose_estimator" type="2Cam.py" output="screen" /> -->
+</launch>
+
+<!-- 831612072516 cam 2 -->

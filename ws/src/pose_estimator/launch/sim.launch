@@ -6,12 +6,12 @@
 
   <node name="gazebo" pkg="gazebo_ros" type="gzserver" args="$(arg world_file)" output="screen" />
 
-  <!-- <node name="gazebo_client" pkg="gazebo_ros" type="gzclient" output="screen" /> -->
+  <node name="gazebo_client" pkg="gazebo_ros" type="gzclient" output="screen" />
 
 
   <!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find aruco_obj)/box_with_aruco/model.sdf -sdf -model box_with_aruco -x 0 -Y 0" output="screen" /> -->
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find aruco_obj)/part_aruco/model.sdf -sdf -model part_aruco -x 0 -Y 0" output="screen" />
   
-  <node name="obj_spinner" pkg="pose_estimator" type="object_spin.py" />
+  <!-- <node name="obj_spinner" pkg="pose_estimator" type="object_spin.py" /> -->
   <!-- <node name="pose_estimator" pkg="pose_estimator" type="pose_estimator.py" output="screen" /> -->
 </launch>

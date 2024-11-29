@@ -1,0 +1,13 @@
+<launch>
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="camera" value="cam1"/>
+    <arg name="serial_no" value="831612070975"/>
+  </include>
+
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="camera" value="cam2"/>
+    <arg name="serial_no" value="831612072516"/>
+    <!-- <arg name="manager" value="realsense2_camera2_manager"/> -->
+  </include>
+  <!-- <node name="cam_pose_calibration" pkg="cam_pose_calibration" type="cam_pose_calibration.py" output="screen" /> -->
+</launch>
