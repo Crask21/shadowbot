@@ -2,26 +2,16 @@
   <include file="$(find realsense2_camera)/launch/rs_camera.launch">
     <arg name="camera" value="cam1"/>
     <arg name="serial_no" value="831612070975"/>
-    <arg name="color_width" value="1920"/>
-    <arg name="color_height" value="1080"/>
-    <arg name="color_fps" value="15"/>
     <arg name="enable_depth" value="false"/>
     <arg name="enable_confidence" value="false"/>
-    <!-- <arg name="initial_reset" value="true"/> -->
   </include>
 
   <include file="$(find realsense2_camera)/launch/rs_camera.launch">
     <arg name="camera" value="cam2"/>
     <arg name="serial_no" value="831612072516"/>
-    <arg name="color_width" value="1920"/>
-    <arg name="color_height" value="1080"/>
-    <arg name="color_fps" value="15"/>
     <arg name="enable_depth" value="false"/>
     <arg name="enable_confidence" value="false"/>
-    <!-- <arg name="initial_reset" value="true"/> -->
-    <!-- <arg name="manager" value="realsense2_camera2_manager"/> -->
   </include>
-  <!-- <node name="live_estimator" pkg="pose_estimator" type="2Cam.py" output="screen" /> -->
 </launch>
 
 <!-- 831612072516 cam 2 -->

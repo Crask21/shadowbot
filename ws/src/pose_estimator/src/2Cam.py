@@ -40,27 +40,40 @@ file_name = 'part_two_aruco_markers'
 pose1 = [0, 0, 0, 0, 0, 0]
 pose2 = [0, 0, 0, 0, 0, 0]
 
-T_aruco_marker0 = p2T([-0.033349,-0.035891,-0.0062,0,0,-1.5552/180*np.pi]) #Missing correction for 6.2mm in z direction
-T_aruco_marker1 = p2T([0.033841,0.036006,-0.0062,0,0,-2.9169/180*np.pi])
+# Aruco marker pose for flange
+T_aruco_marker0 = p2T([-0.033349,-0.035891,0.0062,0,0,-1.5552/180*np.pi]) #Missing correction for 6.2mm in z direction
+T_aruco_marker1 = p2T([0.033841,0.036006,0.0062,0,0,-2.9169/180*np.pi])
+
+# Aruco marker pose for demo part
+# T_aruco_marker0 = p2T([-0.0078981, 0.012777, 0.025, 0, 0, -3.2298/180*np.pi])
+# T_aruco_marker1 = p2T([0.0057998, -0.012272, 0.025, 0, 0, -1.8049/180*np.pi])
 
 aruco_marker_side_length = 0.0203 # Real world marker size
-T1 = [[-0.28587316407227642, -0.51317057736526661, 0.80927899552002736, -0.5317133663644176],
-      [-0.93384342790334807, -0.040266690318529585, -0.35540828045012723, -0.3628481841155831],
-      [0.21497205917288395, -0.85734156097636527, -0.46770980489784414, 0.4461471911440853], 
-      [0, 0, 0, 1]] # New position of cam1 on pillar
-T1 = np.array(T1)
-T1[:3, :3] = T1[:3, :3].T
-T1 = T1.tolist()
-print(T1)
-T2 = [[-0.27950358555639854, 0.52866365701832529, 0.8014939072813515, -0.5282833629794542],
-      [0.93678722651385238, -0.032852793954910961, 0.3483538232456192, -0.8076321694211532], 
-      [0.2104933203253751, 0.84819539710927838, -0.48606288731092429,0.4422647013629318],
-      [0, 0, 0, 1]] # New position of cam2 on pillar
+# T1 = [[-0.28587316407227642, -0.51317057736526661, 0.80927899552002736, -0.5317133663644176],
+#       [-0.93384342790334807, -0.040266690318529585, -0.35540828045012723, -0.3628481841155831],
+#       [0.21497205917288395, -0.85734156097636527, -0.46770980489784414, 0.4461471911440853], 
+#       [0, 0, 0, 1]] # Old calculation of position of cam1 on pillar
+T1 = [[-0.28080641108408705, -0.52529853656550363, 0.80324915622502535, -0.5340115894520676],
+   [-0.92574746104020345, -0.072599121646612613, -0.37110780901748408, -0.3620663612649232],
+   [0.25325757219023431, -0.84781531893348128, -0.4659074877162071, 0.4409975675038182],
+   [0, 0, 0, 1]] # New calculation of position of cam1 on pillar
+# T1 = np.array(T1)
+# T1[:3, :3] = T1[:3, :3].T
+# T1 = T1.tolist()
+# print(T1)
+# T2 = [[-0.27950358555639854, 0.52866365701832529, 0.8014939072813515, -0.5282833629794542],
+#       [0.93678722651385238, -0.032852793954910961, 0.3483538232456192, -0.8076321694211532], 
+#       [0.2104933203253751, 0.84819539710927838, -0.48606288731092429,0.4422647013629318],
+#       [0, 0, 0, 1]] # Old calculation of position of cam2 on pillar
+T2 = [[-0.28549835357294084, 0.55042222520351669, 0.78455469159845648, -0.5286516502211807],
+   [0.93083198695487401, -0.035606064332653592, 0.36370870245896036, -0.8068283958501908],
+   [0.22812825815488452, 0.8341268381875433, -0.50218514080612753, 0.4407541458165125],
+   [0, 0, 0, 1]] # New calculation of position of cam2 on pillar
 # Inverse the rotation matrix in T2
-T2 = np.array(T2)
-T2[:3, :3] = T2[:3, :3].T
-T2 = T2.tolist()
-print(T2)
+# T2 = np.array(T2)
+# T2[:3, :3] = T2[:3, :3].T
+# T2 = T2.tolist()
+# print(T2)
 global mtx, dst, H1, q_list, p_list
 global mtx2, dst2, H2
 global T1_avg, T2_avg
@@ -79,7 +92,8 @@ def get_cam1_info():
     camera_info = rospy.wait_for_message("/cam1/color/camera_info", CameraInfo)
     mtx = np.array(camera_info.K).reshape(3, 3)
     # dst = np.array(camera_info.D)
-    dst = np.array([0.05746940315041734,0.27530099251372153,0.0006999800812428493,-0.000768091966152859,-1.3372741520547178])
+    # dst = np.array([0.05746940315041734,0.27530099251372153,0.0006999800812428493,-0.000768091966152859,-1.3372741520547178]) #640x480
+    dst = np.array([0.139874415251927, -0.42450290350724, -0.000443565714817, -0.0013455338084, 0.31016064591688]) # k1, k2, p1, p2, k3 #1920x1080
 
     return mtx, dst
 def get_cam2_info():
@@ -89,8 +103,8 @@ def get_cam2_info():
     camera_info = rospy.wait_for_message("/cam2/color/camera_info", CameraInfo)
     mtx2 = np.array(camera_info.K).reshape(3, 3)
     # dst = np.array(camera_info.D)
-    dst2 = np.array([0.08100698078726337,0.11095057485263705,0.0027741518864256662,-0.0008486478641119692,-0.9360584424119222])
-
+    # dst2 = np.array([0.08100698078726337,0.11095057485263705,0.0027741518864256662,-0.0008486478641119692,-0.9360584424119222])
+    dst2 = np.array([0.13307403966671, -0.331350606935734, 0.000245071560936, 0.000315038110404, 0.123296864151717]) # k1, k2, p1, p2, k3 #1920x1080
     return mtx2, dst2
 
 def get_object_pose(name):
@@ -161,7 +175,12 @@ def pose_estimator1(image_msg):
         # print("tvecs: ", tvecs)
         for i in range(len(ids)):
             cv2.drawFrameAxes(image, mtx, dst, rvecs[i], tvecs[i], aruco_marker_side_length)
-            
+        
+        # --------------------------------- Debugging -------------------------------- #
+        # print("rvecs: ", rvecs)
+        # print("tvecs: ", tvecs)
+        # print("H1: ", H1)
+        # print("T_aruco_marker0: ", T_aruco_marker0)
 
         T_obj = []
         T_obj_camera_frame = []
@@ -219,7 +238,10 @@ def pose_estimator1(image_msg):
         # print("Error in position: {}".format(p_error))
         q_avg = tf_trans.quaternion_from_matrix(T_avg)
         # print("p1: ", np.around(p_avg, 4), "\tq1: ", np.around(tf_trans.euler_from_quaternion(q_avg),4))
+        temp = np.array(T_obj_camera_frame[0])[0:3, 3]
+        # print("T_cam_1: ", T_obj_camera_frame)
 
+        # print("p_avg: ", p_avg)
     else:
         T1_avg = None
         print("Cam1, No markers detected")
@@ -276,6 +298,11 @@ def pose_estimator2(image_msg):
         T_obj = []
         T_obj_camera_frame = []
         # Get a list of transformation matrices for each marker
+
+        
+
+
+
         if 0 in ids and 1 in ids:
             # Marker 0
             idx = np.where(ids == 0)[0][0]
@@ -363,7 +390,7 @@ def pose_estimator_node():
 
 
     # ---------------------------------- UR Arm ---------------------------------- #
-    use_arm = True
+    use_arm = False
     if use_arm:
         rtde_r = rtde_receive.RTDEReceiveInterface("192.168.1.130")
 
@@ -382,8 +409,9 @@ def pose_estimator_node():
     while not rospy.is_shutdown():
         r.sleep()
 
+
         if T1_avg is not None and T2_avg is not None and not np.isnan(T2_avg).any() and not np.isnan(T1_avg).any():
-            
+            T_avg = np.mean([T1_avg, T2_avg], axis=0)
             
 
             p1 = T1_avg[:3, 3]
@@ -394,7 +422,7 @@ def pose_estimator_node():
             q_mid = tf_trans.quaternion_slerp(q1, q2, 0.5)
             p_diff = np.linalg.norm(p1 - p2)
             q_diff = tf_trans.quaternion_multiply(q1, tf_trans.quaternion_inverse(q2))
-
+            
             if use_arm:
                 actual_q = rtde_r.getActualTCPPose()
                 actual_p = actual_q[:3]
@@ -413,6 +441,27 @@ def pose_estimator_node():
                 i += 1
                 with open(save_path, "a") as file:
                     file.write(", ".join(map(str, p1 + q1 + p2 + q2 + actual_p + actual_q[3:])) + "\n")
+        elif T1_avg is None:
+            T_avg = T2_avg
+        elif T2_avg is None:
+            T_avg = T1_avg
+        
+        if T_avg is not None and not np.isnan(T_avg).any():
+            pose_msg = PoseStamped()
+            pose_msg.header.stamp = rospy.Time.now()
+            pose_msg.header.frame_id = "world"
+
+            pose_msg.pose.position.x = T_avg[0, 3]
+            pose_msg.pose.position.y = T_avg[1, 3]
+            pose_msg.pose.position.z = T_avg[2, 3]
+
+            q_avg = tf_trans.quaternion_from_matrix(T_avg)
+            pose_msg.pose.orientation.x = q_avg[0]
+            pose_msg.pose.orientation.y = q_avg[1]
+            pose_msg.pose.orientation.z = q_avg[2]
+            pose_msg.pose.orientation.w = q_avg[3]
+
+            pose_pub.publish(pose_msg)
         if(i >= 1000):
             break 
             # else:
