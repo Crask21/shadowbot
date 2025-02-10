@@ -18,7 +18,7 @@ import rtde_receive
 import os
 
 
-
+# ---------------------------- Object definitions ---------------------------- #
 #Test cube definition
 # aruco_marker_side_length = 0.015
 # aruco_marker0_pose = [-(0.025+0.0001), 0, 0, 0, -np.pi/2, 0]
@@ -41,14 +41,22 @@ pose1 = [0, 0, 0, 0, 0, 0]
 pose2 = [0, 0, 0, 0, 0, 0]
 
 # Aruco marker pose for flange
-T_aruco_marker0 = p2T([-0.033349,-0.035891,0.0062,0,0,-1.5552/180*np.pi]) #Missing correction for 6.2mm in z direction
-T_aruco_marker1 = p2T([0.033841,0.036006,0.0062,0,0,-2.9169/180*np.pi])
+# T_aruco_marker0 = p2T([-0.033349,-0.035891,0.0062,0,0,-1.5552/180*np.pi]) #Missing correction for 6.2mm in z direction
+# T_aruco_marker1 = p2T([0.033841,0.036006,0.0062,0,0,-2.9169/180*np.pi])
 
 # Aruco marker pose for demo part
-# T_aruco_marker0 = p2T([-0.0078981, 0.012777, 0.025, 0, 0, -3.2298/180*np.pi])
-# T_aruco_marker1 = p2T([0.0057998, -0.012272, 0.025, 0, 0, -1.8049/180*np.pi])
+T_aruco_marker0 = p2T([-0.0078981, 0.012777, 0.025, 0, 0, -3.2298/180*np.pi])
+T_aruco_marker1 = p2T([0.0057998, -0.012272, 0.025, 0, 0, -1.8049/180*np.pi])
 
 aruco_marker_side_length = 0.0203 # Real world marker size
+
+
+T_aruco_marker0 = p2T([-0.00596436 , 0.0191722, 0, 0, 0, 16.613/180*np.pi])
+T_aruco_marker1 = p2T([0.00459428, -0.01967, 0.0, 0, 0, 13.3466/180*np.pi])
+aruco_marker_side_length = 0.00989
+
+
+# -------------------------------- Camera pose ------------------------------- #
 # T1 = [[-0.28587316407227642, -0.51317057736526661, 0.80927899552002736, -0.5317133663644176],
 #       [-0.93384342790334807, -0.040266690318529585, -0.35540828045012723, -0.3628481841155831],
 #       [0.21497205917288395, -0.85734156097636527, -0.46770980489784414, 0.4461471911440853], 
@@ -91,6 +99,9 @@ def get_cam1_info():
     global mtx, dst
     camera_info = rospy.wait_for_message("/cam1/color/camera_info", CameraInfo)
     mtx = np.array(camera_info.K).reshape(3, 3)
+    mtx = np.array([[1366.00600672729,	0,	980.57576507668], 
+                    [0,	1366.32623881029,	535.497212026438],
+                    [0,	0,	1]])
     # dst = np.array(camera_info.D)
     # dst = np.array([0.05746940315041734,0.27530099251372153,0.0006999800812428493,-0.000768091966152859,-1.3372741520547178]) #640x480
     dst = np.array([0.139874415251927, -0.42450290350724, -0.000443565714817, -0.0013455338084, 0.31016064591688]) # k1, k2, p1, p2, k3 #1920x1080
@@ -246,12 +257,13 @@ def pose_estimator1(image_msg):
         T1_avg = None
         print("Cam1, No markers detected")
     # global T2_avg
-    if T2_avg is not None and not np.isnan(T2_avg).any():
-        T2_cam1 = np.linalg.multi_dot([np.linalg.inv(H1), T2_avg])
-        drawAxis(image, T2_cam1, mtx, dst, aruco_marker_side_length)
-        # print("T2_cam1: ", T2_cam1)
-        cv2.putText(image, "T2", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-    cv2.imshow("Image 1", image)
+    # if T2_avg is not None and not np.isnan(T2_avg).any():
+    #     T2_cam1 = np.linalg.multi_dot([np.linalg.inv(H1), T2_avg])
+    #     drawAxis(image, T2_cam1, mtx, dst, aruco_marker_side_length)
+    #     # print("T2_cam1: ", T2_cam1)
+    #     cv2.putText(image, "T2", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+    half_sized_image = cv2.resize(image, (0, 0), fx=0.5, fy=0.5)
+    cv2.imshow("Image 1", half_sized_image)
     cv2.waitKey(10)
     # q_list.append(q_error)
     # p_list.append(p_error)
@@ -374,7 +386,7 @@ def pose_estimator_node():
     print("-------------------------------------------\n\n node created\n\n-------------------------------------------")
     pose_pub = rospy.Publisher('estimated_pose', PoseStamped, queue_size=10)
 
-    r = rospy.Rate(30)
+    r = rospy.Rate(15)
     global mtx, dst, H1, q_list, p_list, H2
     mtx, dst = get_cam1_info()
     H1 = T1
@@ -382,7 +394,7 @@ def pose_estimator_node():
     p_list, q_list = [], []
 
     global mtx2, dst2
-    mtx2, dst2 = get_cam2_info()
+    # mtx2, dst2 = get_cam2_info()
     global T1_avg, T2_avg
     T2_avg = None
     T1_avg = None
@@ -396,9 +408,9 @@ def pose_estimator_node():
 
     print("-------------------------------------------\n\n\n-------------------------------------------")
     rospy.Subscriber("/cam1/color/image_raw", Image, pose_estimator1)
-    rospy.Subscriber("/cam2/color/image_raw", Image, pose_estimator2)
+    # rospy.Subscriber("/cam2/color/image_raw", Image, pose_estimator2)
     print("-------------------------------------------\n\n initialised \n\n-------------------------------------------")
-    save_path = "/home/casper/Documents/studentermedhjælper/shadowbot/ws/src/pose_estimator/data/real_error_new_cam_pose.csv"
+    save_path = "/home/casper/Documents/studentermedhjælper/shadowbot/ws/src/pose_estimator/data/HIGHRESerrorCam1_s2.csv"
     # save_path_Cam1 = "/home/casper/Documents/studentermedhjælper/shadowbot/ws/src/pose_estimator/data/real_error_new_cam_pose.csv"
     # save_path_Cam2 = "/home/casper/Documents/studentermedhjælper/shadowbot/ws/src/pose_estimator/data/real_error_new_cam_pose.csv"
     
@@ -409,6 +421,7 @@ def pose_estimator_node():
     while not rospy.is_shutdown():
         r.sleep()
 
+    
 
         if T1_avg is not None and T2_avg is not None and not np.isnan(T2_avg).any() and not np.isnan(T1_avg).any():
             T_avg = np.mean([T1_avg, T2_avg], axis=0)
@@ -438,13 +451,29 @@ def pose_estimator_node():
                 # actual_q_quat = actual_q_quat.tolist()
                 # print("p1 type: {}, q1 type: {}, actual_p type: {}".format(type(p1), type(q1), type(actual_p)))
                 # print("p1: {}, \tq1: {}, \tactual_q: {}".format(np.around(p1, 4), np.around(q1,4), actual_q))
+                print("p1: {p1}, \tq1: {q1}")
                 i += 1
                 with open(save_path, "a") as file:
-                    file.write(", ".join(map(str, p1 + q1 + p2 + q2 + actual_p + actual_q[3:])) + "\n")
+                    file.write(", ".join(map(str, p1 + q1 + p2 + q2 + actual_q)) + "\n")
         elif T1_avg is None:
             T_avg = T2_avg
         elif T2_avg is None:
             T_avg = T1_avg
+
+            if use_arm:
+                p1 = T1_avg[:3, 3]
+                q1 = tf_trans.quaternion_from_matrix(T1_avg)
+                actual_q = rtde_r.getActualTCPPose()
+                actual_p = actual_q[:3]
+                print(i)
+                p1 = p1.tolist()
+                p2 = [0,0,0]
+                q1 = q1.tolist()
+                q2 = [0,0,0,0]
+                i += 1
+                with open(save_path, "a") as file:
+                    file.write(", ".join(map(str, p1 + q1 + p2 + q2 + actual_q)) + "\n")
+
         
         if T_avg is not None and not np.isnan(T_avg).any():
             pose_msg = PoseStamped()
@@ -462,6 +491,9 @@ def pose_estimator_node():
             pose_msg.pose.orientation.w = q_avg[3]
 
             pose_pub.publish(pose_msg)
+            
+
+            
         if(i >= 1000):
             break 
             # else:

@@ -41,7 +41,7 @@ class ImageSaver:
             input("Press Enter to capture the next image...")
             actual_q = self.rtde_r.getActualQ()
             actual_p = self.rtde_r.getActualTCPPose()
-            cv2.imwrite(os.path.join(os.path.join(self.save_path, "camera1"), f"{i}.png"), self.image1)
+            cv2.imwrite(os.path.join(os.path.join(self.save_path, "camera1"), f"{i:03}.png"), self.image1)
             # cv2.imwrite(os.path.join(os.path.join(self.save_path, "camera2"), f"{i}.png"), self.image2)
             with open(os.path.join(self.save_path, "pose_data.csv"), "a") as file:
                 file.write(f"{i},{actual_p},{actual_q}\n")

@@ -3,3 +3,7 @@ ws/devel/
 ws/logs/
 ws/.catkin_tools
 ws/.vscode
+Calibration/
+misc/
+ws/src/cam_pose_calibration/
+ws/src/pose_estimator/data/

@@ -59,7 +59,7 @@ def demo():
 
     # goal = [-0.150, -0.800, 0.470, 0, 0, 0]
     # goal2 = [-0.150, -0.800, 0.470, 0, np.pi, 0]
-    goal = [0.100, -0.771, 0.055, 0, 0, 0]
+    goal = [0.098, -0.777, 0.055, 0, 0, 0]
     #rtde_c.moveL(goal2, 0.2, 0.2)
 
     input("Move obj to new TCP pose")
@@ -77,17 +77,18 @@ def demo():
     rtde_c.moveL(goal2,0.1, 0.1)
     input("insert")
     rtde_c.moveL(goal,0.05, 0.05)
-    input("Are you sure?")
-    input("really sure?")
-    rtde_c.moveL(list(np.array(goal) + np.array([0, 0, -0.03, 0, 0, 0])),0.05, 0.05)
+    s = input("Are you sure? y/n")
+    if s != "n":
+        rtde_c.moveL(list(np.array(goal) + np.array([0, 0, -0.0215, 0, 0, 0])),0.05, 0.05)
 
     input("moving out of hole again")
     rtde_c.moveL(goal2,0.1, 0.1)
 
 
+    input("move to abitrary position")
 
-
-    # rtde_c.setTcp([0, 0, 0, 0, 0, 0])
+    rtde_c.setTcp([0, 0, 0, 0, 0, 0])
+    rtde_c.moveL([-0.1, -0.6, 0.3, 1.5,-1.5, 0.1], 0.2, 0.2)
     print("finished")
  
 
