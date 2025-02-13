@@ -3,34 +3,12 @@ import rospy
 from geometry_msgs.msg import PoseStamped
 import cv2
 import numpy as np
-from cv_bridge import CvBridge, CvBridgeError
 import tf.transformations as tf_trans
-from p2T import p2T
-import csv
 import matplotlib.pyplot as plt
 import yaml
 import rospkg
 import pyrealsense2 as rs
 
-
-
-#3D printed part definition
-# aruco_marker_side_length = 0.00989
-aruco_marker0_pose = [0.0089378, 0.010202, (0.02+0.0001), 0, 0, -0.68964]
-aruco_marker1_pose = [-0.0096386, -0.0076465, (0.02+0.0001), 0, 0, -0.81242]
-# T_aruco_marker0 = p2T(aruco_marker0_pose)
-# T_aruco_marker1 = p2T(aruco_marker1_pose)
-
-# Aruco marker pose for flange
-# T_aruco_marker0 = p2T([-0.033349,-0.035891,0.0062,0,0,-1.5552/180*np.pi]) #Missing correction for 6.2mm in z direction
-# T_aruco_marker1 = p2T([0.033841,0.036006,0.0062,0,0,-2.9169/180*np.pi])
-
-# Aruco marker pose for demo part
-# T_aruco_marker0 = p2T([-0.0078981, 0.012777, 0.025, 0, 0, -3.2298/180*np.pi])
-# T_aruco_marker1 = p2T([0.0057998, -0.012272, 0.025, 0, 0, -1.8049/180*np.pi])
-
-aruco_marker_side_length = 0.0203 # Real world marker size
-   
 class ArucoObject:
     def __init__(self, aruco_marker_side_length, marker_poses: np.ndarray, marker_ids) -> None:
         # aruco_marker_side_length: Side length of the aruco marker in meters
@@ -109,7 +87,7 @@ class Camera:
                 self.cfg.enable_stream(rs.stream.color, 1920, 1080, rs.format.bgr8, 15)
                 self.pipe.start(self.cfg)
 
-                self.alpha = 0.8  # Smoothing factor for the low-pass filter
+                self.alpha = 1  # Smoothing factor for the low-pass filter
                 self.rvec_est = np.zeros((3, 1))
                 self.tvec_est = np.zeros((3, 1))
         else:
@@ -181,37 +159,29 @@ class Camera:
         T = np.linalg.multi_dot([self.H, T_cam_frame])
         return T
 
-
 def pose_estimator_node():
     # ------------------------------ Ros node start ------------------------------ #
     rospy.init_node('pose_estimator', anonymous=True)
     pose_pub = rospy.Publisher('estimated_pose', PoseStamped, queue_size=10)
     r = rospy.Rate(15)
 
-    # ---------------------------- initialise Cameras ---------------------------- #
+    # ---------------------------- initialise Camera ---------------------------- #
     rospack = rospkg.RosPack()
     package_path = rospack.get_path('pose_estimator')
-    config_path = f"{package_path}/config/camera1.yaml"
-    cam1 = Camera(filename = config_path)
-
-    config_path = f"{package_path}/config/camera2.yaml"
-    cam2 = Camera(filename = config_path)
+    config_path = f"{package_path}/config/camera3.yaml"
+    cam = Camera(filename = config_path)
 
     # ----------------------------- initialise object ---------------------------- #
-    aruco_marker_side_length = 0.00989 # Marker size
-    aruco_marker0_pose = [-0.0059644, 0.019172, 0.03, 0, 0, 16.613/180*np.pi]
-    aruco_marker1_pose = [0.0045943, -0.01967, 0.03, 0, 0, 13.347/180*np.pi]
-    obj = ArucoObject(aruco_marker_side_length, np.array([aruco_marker0_pose, aruco_marker1_pose]), np.array([0, 1], dtype=np.int32))
+    aruco_marker_side_length = 0.010 # Marker size
+    aruco_marker0_pose = [-0.00012968, 0.00015992, 0, 0, 0, 0]
+    obj = ArucoObject(aruco_marker_side_length, np.array([aruco_marker0_pose]), np.array([0], dtype=np.int32))
 
     
     while not rospy.is_shutdown():
-        cam1.detect_pose(obj, show=False)
-        cam2.detect_pose(obj, show=True)
+        cam.detect_pose(obj, show=True)
 
-        T1 = cam1.T_est()
-        T2 = cam2.T_est()
+        T = cam.T_est()
 
-        T = T2
 
         pose_msg = PoseStamped()
         pose_msg.header.stamp = rospy.Time.now()
@@ -229,6 +199,7 @@ def pose_estimator_node():
 
         pose_pub.publish(pose_msg)
         r.sleep()
+
 
 
 
